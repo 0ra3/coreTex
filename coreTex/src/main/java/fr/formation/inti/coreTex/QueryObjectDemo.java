@@ -23,24 +23,22 @@ public class QueryObjectDemo {
 	           session.getTransaction().begin();
 	 
 	           
-	           // Crée une instruction SQL.
-	           // Select e.* from EMPLOYEE e cross join DEPARTMENT d where e.DEPT_ID = d.DEPT_ID and d.DEPT_NO = :deptNo;        
-	            String sql = "Select e from " + Employee.class.getName() + " e "
-	                    + " where e.department.deptNo=:deptNo ";
-	 
+	           String sql = " Select e.empId, e.empNo, e.empName from " + Employee.class.getName() + " e ";
+	           
 	   
 	           // Création de la requête
-	           Query<Employee> query = session.createQuery(sql);
+	           Query<Object[]> query = session.createQuery(sql);
 	           
-	           //Déclaration de variables dans la requête.
-	           query.setParameter("deptNo", "D10");
-	    
+	          
 	           // Exécution de la requête.
-	           List<Employee> employees = query.getResultList();
+	           List<Object[]> datas = query.getResultList();
 	 
-	           for (Employee emp : employees) {
-	               System.out.println("Emp: " + emp.getEmpNo() + " : "
-	                       + emp.getEmpName());
+	           for (Object[] emp : datas) {
+	               System.out.println("Emp id: " + emp[0]);
+	               System.out.println("Emp No: " + emp[1]);
+	               System.out.println("Emp No: " + emp[2]);
+	               						
+	        
 	           }
 
 	           // Fermeture de l'accès à la DB
