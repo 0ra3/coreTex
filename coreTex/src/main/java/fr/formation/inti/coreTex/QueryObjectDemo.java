@@ -6,6 +6,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 
+import fr.formation.inti.beans.ShortEmpInfo;
 import fr.formation.inti.entities.Employee;
 import fr.formation.inti.service.HibernateUtils;
 
@@ -23,23 +24,20 @@ public class QueryObjectDemo {
 	           session.getTransaction().begin();
 	 
 	           
-	           String sql = " Select e.empId, e.empNo, e.empName from " + Employee.class.getName() + " e ";
-	           
-	   
-	           // Création de la requête
-	           Query<Object[]> query = session.createQuery(sql);
+	           String sql = "Select new " + ShortEmpInfo.class.getName()
+	                    + "(e.empId, e.empNo, e.empName)" + " from "
+	                    + Employee.class.getName() + " e ";
+	 
+	            Query<ShortEmpInfo> query = session.createQuery(sql);
 	           
 	          
 	           // Exécution de la requête.
-	           List<Object[]> datas = query.getResultList();
-	 
-	           for (Object[] emp : datas) {
-	               System.out.println("Emp id: " + emp[0]);
-	               System.out.println("Emp No: " + emp[1]);
-	               System.out.println("Emp No: " + emp[2]);
-	               						
-	        
-	           }
+	            List<ShortEmpInfo> employees = query.getResultList();
+	            
+	            for (ShortEmpInfo emp : employees) {
+	                System.out.println("Emp: " + emp.getEmpNo() + " : "
+	                        + emp.getEmpName());
+	            }
 
 	           // Fermeture de l'accès à la DB
 	           session.getTransaction().commit();
