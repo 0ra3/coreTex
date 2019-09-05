@@ -17,48 +17,76 @@ import fr.formation.inti.utils.DataUtils;
 public class QueryObjectDemo {
 	
 	public static void main(String[] args) {
-		SessionFactory factory = HibernateUtils.getSessionFactory();
-		 
+		  SessionFactory factory = HibernateUtils.getSessionFactory();
+		  
 	       Session session = factory.getCurrentSession();
 	       Department department = null;
-	       Employee emp = null;
-	       try {
-	           
-	       session.getTransaction().begin();
 	 
-	       Long MaxEmpId= DataUtils.getMaxEmpId(session);
-	       Long empId= MaxEmpId  +1;
-	           
-	       //Obtenir un objet persistant
+	       try {
+	           session.getTransaction().begin();
+	 
+	           System.out.println("- Finding Department deptNo = D10...");
 	       
-	       department = DataUtils.findDepartment(session, "D10");
-	       
-	       
-	       // Creation d'un objet transitoire
-	       
-           emp = new Employee();
-           emp.setEmpId(empId);
-           emp.setEmpNo("E" + empId);
-           emp.setEmpName("Name " + empId);
-           emp.setJob("Coder");
-           emp.setSalary(1000f);
-           emp.setManager(null);
-           emp.sethireDate(new Date());
-           emp.setDepartment(department);
-           
-           //Persistance sur l'objet emp. Pas de lien avec la DB.
-           session.persist(emp);
+	           // Récupératiion d'un objet persistant.
+	           department = DataUtils.findDepartment(session, "D10");
+	 
+	           System.out.println("- First change Location");
+	      
 	            
-	           // Insertion dans la DB
+	           // Modifier un objet persistant.
+	           department.setLocation("Chicago " + System.currentTimeMillis());
+	            
+	           System.out.println("- Location = " + department.getLocation());
+	 
+	           System.out.println("- Calling flush...");
+	    
+	           // session.flush() permet d'insérer les changement dans la DB.
+	           session.flush();
+	 
+	           System.out.println("- Flush OK");
+	 
+	           System.out.println("- Second change Location");
+	            
+	          
+	        // -----------------------------------------------------------------\\
+	           
+	           
+	           department.setLocation("Chicago " + System.currentTimeMillis());
+	  
+	           // Print out location
+	           System.out.println("- Location = " + department.getLocation());
+	 
+	           System.out.println("- Calling commit...");
+	  
+	           // Commit
 	           session.getTransaction().commit();
+	 
+	           System.out.println("- Commit OK");
 	           
 	       } catch (Exception e) {
 	           e.printStackTrace();
-	           // Rollback in case of an error occurred.
 	           session.getTransaction().rollback();
 	       }
-	       
-	       System.out.println("Emp No: " + emp.getEmpNo());
-	}
+	  
+	       // Create the session after it had been closed earlier
+	       // (Cause by commit or update)
+	       session = factory.getCurrentSession();
+	       try {
+	           session.getTransaction().begin();
+	 
+	           System.out.println("- Finding Department deptNo = D10...");
+	            
+	           // Recherche du département
+	           department = DataUtils.findDepartment(session, "D10");
+	  
 
-}
+	           System.out.println("- D10 Location = " + department.getLocation());
+	 
+	           session.getTransaction().commit();
+	       } catch (Exception e) {
+	           e.printStackTrace();
+	           session.getTransaction().rollback();
+	       }
+	   }
+	    
+	}
