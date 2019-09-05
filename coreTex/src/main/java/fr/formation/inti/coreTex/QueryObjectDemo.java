@@ -24,15 +24,16 @@ public class QueryObjectDemo {
 	 
 	           
 	           // Crée une instruction SQL.
-	           // Equivaut à "Select e.* from EMPLOYEE e order by e.EMP_NAME, e.EMP_NO"
-	           
-	           String sql = "Select e from " + Employee.class.getName() + " e "
-	                   + " order by e.empName, e.empNo ";
+	           // Select e.* from EMPLOYEE e cross join DEPARTMENT d where e.DEPT_ID = d.DEPT_ID and d.DEPT_NO = :deptNo;        
+	            String sql = "Select e from " + Employee.class.getName() + " e "
+	                    + " where e.department.deptNo=:deptNo ";
 	 
 	   
 	           // Création de la requête
 	           Query<Employee> query = session.createQuery(sql);
-	 
+	           
+	           //Déclaration de variables dans la requête.
+	           query.setParameter("deptNo", "D10");
 	    
 	           // Exécution de la requête.
 	           List<Employee> employees = query.getResultList();
