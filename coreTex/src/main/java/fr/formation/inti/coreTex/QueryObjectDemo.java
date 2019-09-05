@@ -1,5 +1,6 @@
 package fr.formation.inti.coreTex;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -11,52 +12,44 @@ import fr.formation.inti.beans.ShortEmpInfo;
 import fr.formation.inti.entities.Department;
 import fr.formation.inti.entities.Employee;
 import fr.formation.inti.service.HibernateUtils;
+import fr.formation.inti.utils.DataUtils;
 
 public class QueryObjectDemo {
 	
-	 public static Department getDepartment(Session session, String deptNo) {
-	        String sql = "Select d from " + Department.class.getName() + " d "
-	                + " where d.deptNo= :deptNo ";
-	        
-	        Query<Department> query = session.createQuery(sql);
-	        query.setParameter("deptNo", deptNo);
-	        return (Department) query.getSingleResult();
-	    }
-	 
-	    public static Employee getEmployee(Session session, Long empId) {
-	        String sql = "Select e from " + Employee.class.getName() + " e "
-	                + " where e.empId= :empId ";
-	        
-	        Query<Employee> query = session.createQuery(sql);
-	        query.setParameter("empId", empId);
-	        return (Employee) query.getSingleResult();
-	    }
-
 	public static void main(String[] args) {
 		SessionFactory factory = HibernateUtils.getSessionFactory();
 		 
 	       Session session = factory.getCurrentSession();
-	 
+	       Department department = null;
+	       Employee emp = null;
 	       try {
-	            
-	// Toutes les actions vers la DB doivent être exécutées en une seule requête.
-	    	   //Accès à la DB.
-	           session.getTransaction().begin();
-	 
 	           
-	           Department dept = getDepartment(session, "D10");
-	           Set<Employee> emps = dept.getEmployees();
+	       session.getTransaction().begin();
 	 
-	            System.out.println("Dept Name: " + dept.getDeptName());
-	            for (Employee emp : emps) {
-	                System.out.println("  Emp name: " + emp.getEmpName());
-	            }
-	 
-	            Employee emp = getEmployee(session, 7839L);
-	            System.out.println("Emp Name: " + emp.getEmpName());
+	       Long MaxEmpId= DataUtils.getMaxEmpId(session);
+	       Long empId= MaxEmpId  +1;
+	           
+	       //Obtenir un objet persistant
+	       
+	       department = DataUtils.findDepartment(session, "D10");
+	       
+	       
+	       // Creation d'un objet transitoire
+	       
+           emp = new Employee();
+           emp.setEmpId(empId);
+           emp.setEmpNo("E" + empId);
+           emp.setEmpName("Name " + empId);
+           emp.setJob("Coder");
+           emp.setSalary(1000f);
+           emp.setManager(null);
+           emp.sethireDate(new Date());
+           emp.setDepartment(department);
+           
+           //Persistance sur l'objet emp. Pas de lien avec la DB.
+           session.persist(emp);
 	            
-	            
-	           // Fermeture de l'accès à la DB
+	           // Insertion dans la DB
 	           session.getTransaction().commit();
 	           
 	       } catch (Exception e) {
@@ -64,7 +57,8 @@ public class QueryObjectDemo {
 	           // Rollback in case of an error occurred.
 	           session.getTransaction().rollback();
 	       }
-
+	       
+	       System.out.println("Emp No: " + emp.getEmpNo());
 	}
 
 }
