@@ -4,7 +4,7 @@
 <hibernate-configuration>
  <session-factory name="">
   <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
-  <property name="connection.url">jdbc:mysql://localhost:3306/o7planning?serverTimezone=UTC</property>
+  <property name="connection.url">jdbc:mysql://localhost:3306/adamingExo?serverTimezone=UTC</property>
   <property name="connection.username">root</property>
   <property name="connection.password">orae3727</property>
   <property name="connection.pool_size">1</property>
